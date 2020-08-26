@@ -9,6 +9,7 @@ Allowed Types of change: `Added`, `Changed`, `Deprecated`, `Removed`, `Fixed`, `
 
 ## Unreleased
 
+  - SC-6293 - adds premission to view the Learn-Store
   - SC-5706 Added language selection within teacher registration
   - SC-6019 Added tabbar to classes administration
   - SC-5955 Changed links to Lernen.cloud
