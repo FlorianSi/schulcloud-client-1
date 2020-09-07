@@ -103,13 +103,16 @@ module.exports = (req, res, next) => {
 		link: '/calendar/',
 	}];
 
-	res.locals.sidebarItems.push({
-		name: res.$t('global.link.lernstore'),
-		icon: 'search',
-		link: '/content/',
-		permission: 'LERNSTORE_VIEW',
-		excludedPermission: 'LERNSTORE_HIDE',
-	});
+	// Lern-Store Feature Toggle
+	if (Configuration.get('LERNSTORE_MODE') !== 'DISABLED') {
+		res.locals.sidebarItems.push({
+			name: res.$t('global.link.lernstore'),
+			icon: 'search',
+			link: '/content/',
+			permission: 'LERNSTORE_VIEW',
+			excludedPermission: 'LERNSTORE_HIDE',
+		});
+	}
 
 	// Extensions Feature Toggle
 	const extensionsEnabled = FEATURE_EXTENSIONS_ENABLED === 'true';

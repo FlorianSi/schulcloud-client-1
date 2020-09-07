@@ -1,47 +1,32 @@
-const userHasPermission = (user, permissions, operator = 'AND') => {
-    if (!user) return false;
+const userHasPermission = (user, permissions, operator) => {
+	if(!Array.isArray(permissions)) {
+		permissions = [permissions];
+	}
 
-    if (!Array.isArray(permissions)) {
-        permissions = [permissions];
-    }
+	if(!user) return false;
 
-    const OPERATORS = ['OR', 'AND', 'XOR', 'NOT', '!'];
-    operator = operator.toUpperCase();
-    if (!OPERATORS.includes(operator)) {
-        throw new Error(`Permission Operator mismatch: ${operator}.`);
-    }
+	const userPermissions = user.permissions || [];
 
-    const userPermissions = user.permissions || [];
-
-    const userHasPermission = (permission) => userPermissions.includes(permission);
-    const hasAllPermissions = permissions.every(userHasPermission);
-    const hasAnyPermission = permissions.some(userHasPermission);
-
-    if (operator === 'AND' && hasAllPermissions) {
-        return true;
-    }
-    if (operator === 'OR' && hasAnyPermission) {
-        return true;
-    }
-    if (operator === 'XOR' && (hasAnyPermission && !hasAllPermissions)) {
-        return true;
-    }
-    if ((operator === '!' || operator === 'NOT') && !hasAnyPermission) {
-        return true;
-    }
-
-    return false;
+	if (operator === 'or') {
+		return permissions.some((permission) => { // one permission has to match
+			return userPermissions.includes(permission);
+		});
+	} else {
+		return permissions.every((permission) => { // every permission has to match
+			return userPermissions.includes(permission);
+		});
+	}
 };
 
 module.exports = {
-    userHasPermission,
-    permissionsChecker: (permission, operator) => (req, res, next) => {
-        if (userHasPermission(res.locals.currentUser, permission, operator)) {
-            return next();
-        }
+	userHasPermission,
+	permissionsChecker: (permission, operator) => (req, res, next) => {
+		if (userHasPermission(res.locals.currentUser, permission, operator)) {
+			return next();
+		}
 
-        const error = new Error('Not authorized');
-        error.status = 401;
-        return next(error);
-    }
+		const error = new Error('Not authorized');
+		error.status = 401;
+		return next(error);
+	}
 };
